@@ -10,3 +10,9 @@
 /mvnw
 /mvnw.cmd
 .mvn
+
+# Application properties
+application-secret.properties
+application-local.properties
+.env
+*.env
