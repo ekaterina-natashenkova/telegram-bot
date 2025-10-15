@@ -1,0 +1,58 @@
+Блок для обработки команды /start
+
+            if (Objects.equals(userMessage, "/start")) {
+                message = "Привет! " + chat.username();
+            } else {
+                message = "Для начала работы нужно написать команду - /start";
+            }
+            SendMessage sendMessage = new SendMessage(chat.id(), message);
+            telegramBot.execute(sendMessage);
+
+Зависимость для ТГ-бота (может вызвать конфликт с зависимостью "java-telegram-bot-api"
+
+            <dependency>-->
+            		<groupId>org.telegram</groupId>-->
+            		<artifactId>telegrambots</artifactId>-->
+            		<version>6.9.7.1</version>-->
+            </dependency>-->
+
+При подключении liquibase для отслеживания валидации схемы для hibernate нужно установить тип "validate"
+
+Рефакторинг кода для улучшения архитектуры приложения - единообразие форматов (константы), возможность переиспользования, улучшение тестируемости
+
+    "(\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}) (.+)" - regex для парсинга
+    "dd.MM.yyyy HH:mm" - формат даты
+
+    Можно вывести на уровень класса:
+        public class NotificationService {
+            // Константы класса
+            private static final String DATE_TIME_REGEX = "(\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}) (.+)";
+            private static final String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
+            private static final Pattern PATTERN = Pattern.compile(DATE_TIME_REGEX);
+            private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+            }
+
+        public String processNotification(Long chatId, String text, String username) {
+            // Pattern pattern = Pattern.compile("(\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}) (.+)");
+            // Matcher matcher = pattern.matcher(text);
+            // вместо 2х строк будет 1 с использованием константы:
+                Matcher matcher = NotificationService.PATTERN.matcher(text);
+            // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+            // LocalDateTime dateTime = LocalDateTime.parse(matcher.group(1), formatter);
+            // вместо 2х строк будет 1 с использованием константы:
+                LocalDateTime dateTime = LocalDateTime.parse(matcher.group(1), NotificationService.FORMATTER);
+            }
+
+    Можно создать Util класс:
+        public class NotificationUtils {
+            public static final String DATE_TIME_REGEX = "(\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}) (.+)";
+            public static final String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
+            public static final Pattern NOTIFICATION_PATTERN = Pattern.compile(DATE_TIME_REGEX);
+            public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+        }
+
+        public String processNotification(Long chatId, String text, String username) {
+            Matcher matcher = NotificationUtils.NOTIFICATION_PATTERN.matcher(text);
+            // ...
+            LocalDateTime dateTime = LocalDateTime.parse(matcher.group(1), NotificationUtils.DATE_TIME_FORMATTER);
+        }
