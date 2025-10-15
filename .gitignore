@@ -16,3 +16,4 @@ application-secret.properties
 application-local.properties
 .env
 *.env
+info.txt

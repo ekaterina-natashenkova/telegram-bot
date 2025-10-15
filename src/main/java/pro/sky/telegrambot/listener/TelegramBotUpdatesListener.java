@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.model.NotificationTask;
 import pro.sky.telegrambot.repository.NotificationTaskRepository;
+import pro.sky.telegrambot.util.NotificationUtils;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -53,19 +54,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Long chatId = chat.id();
 
             /**
-             * Начальный (тестовый) блок для обработки команды /start
-
-            if (Objects.equals(userMessage, "/start")) {
-                message = "Привет! " + chat.username();
-            } else {
-                message = "Для начала работы нужно написать команду - /start";
-            }
-            SendMessage sendMessage = new SendMessage(chat.id(), message);
-            telegramBot.execute(sendMessage);
-
-             */
-
-            /**
              * Блок для обработки уведомлений, с учетом команды /start и приветствия
              */
             String response = processNotification(chatId, userMessage, chat.username());
@@ -89,13 +77,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     "дд.мм.гггг чч:мм Текст_напоминания\n";
         }
 
-        Pattern pattern = Pattern.compile("(\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}) (.+)");
-        Matcher matcher = pattern.matcher(text);
+        Matcher matcher = NotificationUtils.NOTIFICATION_PATTERN.matcher(text);
 
         if (matcher.matches()) {
             try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-                LocalDateTime dateTime = LocalDateTime.parse(matcher.group(1), formatter);
+                LocalDateTime dateTime = LocalDateTime.parse(matcher.group(1), NotificationUtils.DATE_TIME_FORMATTER);
                 String task = matcher.group(2);
 
                 if (dateTime.isBefore(LocalDateTime.now())) {
